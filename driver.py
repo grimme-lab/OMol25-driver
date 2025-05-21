@@ -66,8 +66,8 @@ def read_charge_and_multiplicity(
                 print(
                     f"Using multiplicity from file {uhf_file.name} (UHF={uhf}): {multiplicity}"
                 )
-        except ValueError:
-            raise ValueError(f"Invalid float in {uhf_file}")
+        except ValueError as e:
+            raise ValueError(f"Invalid float in {uhf_file}") from e
     else:
         multiplicity = 1
         if verbose:
@@ -134,7 +134,7 @@ def main() -> None:
         device="cpu",
     )
 
-    atoms = read("struc.xyz") 
+    atoms = read("struc.xyz")
     atoms.info["charge"] = charge
     atoms.info["spin"] = multiplicity
     atoms.calc = calc
@@ -142,6 +142,7 @@ def main() -> None:
     if args.opt:
         original_atoms = atoms.copy()
         optimize(atoms, fmax=args.fmax, steps=1000, traj="trajectory.out")
+        # TODO: Calculate RMSD between original and optimized structures
         write("omol25-opt.xyz", atoms)
 
     etot = atoms.get_potential_energy() / Hartree  # NumPy array with one element
