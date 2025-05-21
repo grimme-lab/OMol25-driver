@@ -8,6 +8,8 @@ from ase.units import Bohr, Hartree
 from ase.optimize import LBFGS
 from fairchem.core import FAIRChemCalculator
 
+CHECKPOINT_PATH = Path("/home/marcel/data/OMol25/esen_sm_conserving_all.pt").resolve()
+
 
 def parse_arguments() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="OMol25 driver for CLI.")
@@ -130,7 +132,7 @@ def main() -> None:
         verbose=args.verbose,
     )
     calc = FAIRChemCalculator(
-        checkpoint_path="/home/marcel/data/OMol25/esen_sm_conserving_all.pt",
+        checkpoint_path=CHECKPOINT_PATH,
         device="cpu",
     )
 
@@ -151,6 +153,9 @@ def main() -> None:
     forces = atoms.get_forces(apply_constraint=True, md=False)
 
     print(f"Total energy: {energy:.10f}")
+    if args.verbose:
+        # Write name of employed checkpoint file into the output
+        print(f"Used checkpoint file path: {CHECKPOINT_PATH}")
 
     write_gradient_block(grad_file, energy, forces, atoms)
     write_energy_block(energy_file, energy)
