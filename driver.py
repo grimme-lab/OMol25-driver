@@ -1,14 +1,15 @@
 import argparse
 from pathlib import Path
+import time
 
 import numpy as np
 from ase import Atoms
 from ase.io import read, write
 from ase.units import Bohr, Hartree
 from ase.optimize import LBFGS
-from fairchem.core import FAIRChemCalculator
+from fairchem.core import pretrained_mlip, FAIRChemCalculator
 
-CHECKPOINT_PATH = Path("/home/marcel/data/OMol25/esen_sm_conserving_all.pt").resolve()
+MODEL = "uma-sm"
 
 
 def parse_arguments() -> argparse.Namespace:
@@ -131,10 +132,8 @@ def main() -> None:
         cli_mult=args.multiplicity,
         verbose=args.verbose,
     )
-    calc = FAIRChemCalculator(
-        checkpoint_path=CHECKPOINT_PATH,
-        device="cpu",
-    )
+    predictor = pretrained_mlip.get_predict_unit(MODEL, device="cuda")
+    calc = FAIRChemCalculator(predictor, task_name="omol")
 
     atoms = read(input_path)
     atoms.info["charge"] = charge
@@ -147,15 +146,37 @@ def main() -> None:
         # TODO: Calculate RMSD between original and optimized structures
         write("omol25-opt.xyz", atoms)
 
+    # Check run time for "get_potential_energy"
+    # and "get_forces" methods
+    start_time = time.time()
     etot = atoms.get_potential_energy() / Hartree  # NumPy array with one element
+    elapsed_time_sp = time.time() - start_time
+    # print time in H:M:S format
+    elapsed_time_sp_str = time.strftime("%H:%M:%S", time.gmtime(elapsed_time_sp))
+    if args.verbose:
+        print(f"Wall time for single-point energy: {elapsed_time_sp_str}")
     energy = float(np.atleast_1d(etot)[0])
 
+    # Check run time for "get_forces" method
+    start_time_forces = time.time()
     forces = atoms.get_forces(apply_constraint=True, md=False)
+    elapsed_time_forces = time.time() - start_time_forces
+    elapsed_time_forces_str = time.strftime(
+        "%H:%M:%S", time.gmtime(elapsed_time_forces)
+    )
+    if args.verbose:
+        print(f"Wall time for nuclear gradient: {elapsed_time_forces_str}")
+
+    # Check total run time
+    total_time = time.time() - start_time
+    total_time_str = time.strftime("%H:%M:%S", time.gmtime(total_time))
+    if args.verbose:
+        print(f"Total wall time: {total_time_str}")
 
     print(f"Total energy: {energy:.10f}")
     if args.verbose:
         # Write name of employed checkpoint file into the output
-        print(f"Used checkpoint file path: {CHECKPOINT_PATH}")
+        print(f"Used model: {MODEL}")
 
     write_gradient_block(grad_file, energy, forces, atoms)
     write_energy_block(energy_file, energy)
