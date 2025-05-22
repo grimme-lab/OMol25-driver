@@ -9,7 +9,7 @@ from ase.units import Bohr, Hartree
 from ase.optimize import LBFGS
 from fairchem.core import pretrained_mlip, FAIRChemCalculator
 
-MODEL = "uma-sm"
+DEFAULT_MODEL = "uma-sm"
 
 
 def parse_arguments() -> argparse.Namespace:
@@ -24,6 +24,12 @@ def parse_arguments() -> argparse.Namespace:
     )
     parser.add_argument(
         "--opt", action="store_true", default=False, help="Optimize the structure."
+    )
+    parser.add_argument(
+        "--model",
+        type=str,
+        default=DEFAULT_MODEL,
+        help="Model name for the MLIP.",
     )
     parser.add_argument("structure_file", type=str, help="Input structure file.")
     return parser.parse_args()
@@ -132,7 +138,7 @@ def main() -> None:
         cli_mult=args.multiplicity,
         verbose=args.verbose,
     )
-    predictor = pretrained_mlip.get_predict_unit(MODEL, device="cuda")
+    predictor = pretrained_mlip.get_predict_unit(args.model, device="cuda")
     calc = FAIRChemCalculator(predictor, task_name="omol")
 
     atoms = read(input_path)
@@ -176,7 +182,7 @@ def main() -> None:
     print(f"Total energy: {energy:.10f}")
     if args.verbose:
         # Write name of employed checkpoint file into the output
-        print(f"Used model: {MODEL}")
+        print(f"Used model: {DEFAULT_MODEL}")
 
     write_gradient_block(grad_file, energy, forces, atoms)
     write_energy_block(energy_file, energy)
