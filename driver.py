@@ -136,7 +136,7 @@ def main() -> None:
         device="cpu",
     )
 
-    atoms = read("struc.xyz")
+    atoms = read(input_path)
     atoms.info["charge"] = charge
     atoms.info["spin"] = multiplicity
     atoms.calc = calc
