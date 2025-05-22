@@ -18,6 +18,9 @@ This repository contains a command-line utility for executing energy and gradien
 
 ### Prerequisites
 
+> [!IMPORTANT]
+> We should test if a general installation for all of us via a `conda`/`mamba` environment could also work.
+
 - Create a Hugging Face account and request access to the `FAIRChem` models:
   - [Dataset](https://huggingface.co/facebook/OMol25)
   - [Model](https://huggingface.co/facebook/UMA)
