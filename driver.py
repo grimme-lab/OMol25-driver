@@ -138,7 +138,7 @@ def main() -> None:
         cli_mult=args.multiplicity,
         verbose=args.verbose,
     )
-    predictor = pretrained_mlip.get_predict_unit(args.model, device="cuda")
+    predictor = pretrained_mlip.get_predict_unit(args.model, device="cpu")
     calc = FAIRChemCalculator(predictor, task_name="omol")
 
     atoms = read(input_path)
