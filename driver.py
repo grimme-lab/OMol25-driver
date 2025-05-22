@@ -152,30 +152,29 @@ def main() -> None:
         # TODO: Calculate RMSD between original and optimized structures
         write("omol25-opt.xyz", atoms)
 
-    # Check run time for "get_potential_energy"
-    # and "get_forces" methods
     start_time = time.time()
     etot = atoms.get_potential_energy() / Hartree  # NumPy array with one element
     elapsed_time_sp = time.time() - start_time
-    # print time in H:M:S format
     elapsed_time_sp_str = time.strftime("%H:%M:%S", time.gmtime(elapsed_time_sp))
+    elapsed_time_sp_str += f".{int((elapsed_time_sp % 1) * 1000):03d}"
     if args.verbose:
         print(f"Wall time for single-point energy: {elapsed_time_sp_str}")
     energy = float(np.atleast_1d(etot)[0])
 
-    # Check run time for "get_forces" method
     start_time_forces = time.time()
     forces = atoms.get_forces(apply_constraint=True, md=False)
     elapsed_time_forces = time.time() - start_time_forces
     elapsed_time_forces_str = time.strftime(
         "%H:%M:%S", time.gmtime(elapsed_time_forces)
     )
+    elapsed_time_forces_str += f".{int((elapsed_time_forces % 1) * 1000):03d}"
     if args.verbose:
         print(f"Wall time for nuclear gradient: {elapsed_time_forces_str}")
 
     # Check total run time
     total_time = time.time() - start_time
     total_time_str = time.strftime("%H:%M:%S", time.gmtime(total_time))
+    total_time_str += f".{int((total_time % 1) * 1000):03d}"
     if args.verbose:
         print(f"Total wall time: {total_time_str}")
 
