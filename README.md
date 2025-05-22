@@ -16,7 +16,40 @@ This repository contains a command-line utility for executing energy and gradien
 
 ## Installation
 
-**TODO**
+### Prerequisites
+
+- Create a Hugging Face account and request access to the `FAIRChem` models:
+  - [Dataset](https://huggingface.co/facebook/OMol25)
+  - [Model](https://huggingface.co/facebook/UMA)
+
+- Generate a token for access to the models:
+  1. Go to your [Hugging Face account settings](https://huggingface.co/settings/tokens).
+  2. Create a new token with the `read` scope.
+  3. **Leave the window open for the next step.**
+
+### Installation of the FAIRChem framework
+
+You can install the project in a new virtual environment (provided for example by the package managers `conda` or `mamba` (see also [here](https://github.com/conda-forge/miniforge) and [here](https://conda.io/projects/conda/en/latest/user-guide/getting-started.html))).
+With `mamba`, a matching Python environment can be set up and activated as follows:
+
+```
+mamba create -n fairchem-omol25 python=3.12
+mamba activate fairchem-omol25
+```
+
+Afterwards, the package can be installed by downloading the package from `PyPi`:
+
+```bash
+pip install fairchem-core
+```
+
+Now, you need to login to the Hugging Face Hub to access the pretrained models. You can do this by running:
+
+```bash
+huggingface-cli login
+```
+
+In the command-line prompt, paste the token you generated in the previous step. This will authenticate your local environment with the Hugging Face Hub.
 
 ## Usage
 
