@@ -181,7 +181,7 @@ def main() -> None:
     print(f"Total energy: {energy:.10f}")
     if args.verbose:
         # Write name of employed checkpoint file into the output
-        print(f"Used model: {DEFAULT_MODEL}")
+        print(f"Used model: {args.model}")
 
     write_gradient_block(grad_file, energy, forces, atoms)
     write_energy_block(energy_file, energy)
